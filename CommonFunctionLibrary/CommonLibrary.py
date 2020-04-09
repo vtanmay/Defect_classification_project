@@ -1,5 +1,7 @@
 from jira.client import JIRA
 import pandas as pd
+import os
+
 
 # get defect summary from JIRA
 def getDefectSummaryFromJira(prProject=None, prDefectId=None):
@@ -7,28 +9,47 @@ def getDefectSummaryFromJira(prProject=None, prDefectId=None):
     summary_list = []
     jira_options = {'server': 'https://servicedesk.oversightsystems.com'}
     jira = JIRA(options=jira_options, basic_auth=('tanmay.vaidya', 'l3tV41d41n!2019'))
-    jql = 'project = {} AND key = {}'.format(prProject,prDefectId)
+    jql = 'project = {} AND key = {}'.format(prProject, prDefectId)
     issueList = jira.search_issues(jql)
     for issue in issueList:
         key_list.append(issue.key)
         summary_list.append(issue.fields.summary)
     return summary_list
 
-def getColumnDataAsAListFromTable(prDataFrame=None,prOptColumnName=None,prOptColumnIndex=0):
+
+def getColumnDataAsAListFromTable(prDataFrame=None, prOptColumnName=None, prOptColumnIndex=0):
     if prOptColumnName is not None:
-            return prDataFrame[prOptColumnName].values.tolist()
+        return prDataFrame[prOptColumnName].values.tolist()
     elif prOptColumnName is None:
-            return prDataFrame[prDataFrame.columns[prOptColumnIndex]].values.tolist()
+        return prDataFrame[prDataFrame.columns[prOptColumnIndex]].values.tolist()
+
 
 def getPerformanceKeywordsFromExcelSheet(prFilePath=None, prSheetName=None):
-        df = readXLSFile(prFilePath, prSheetName)
-        listData = getColumnDataAsAListFromTable(prDataFrame=df, prOptColumnIndex=0)
-        return listData
+    df = readXLSFile(prFilePath, prSheetName)
+    listData = getColumnDataAsAListFromTable(prDataFrame=df, prOptColumnIndex=0)
+    return listData
 
-def readXLSFile(prFilePath=None,prEitherSheetName=None,prOrSheetIndex=0):
+
+def readXLSFile(prFilePath=None, prEitherSheetName=None, prOrSheetIndex=0):
     if prEitherSheetName is not None:
-       df=pd.read_excel(prFilePath,sheet_name=prEitherSheetName)
-       return df
+        df = pd.read_excel(prFilePath, sheet_name=prEitherSheetName)
+        return df
     else:
-       df= pd.read_excel(prFilePath,sheet_name=prOrSheetIndex)
-       return df
+        df = pd.read_excel(prFilePath, sheet_name=prOrSheetIndex)
+        return df
+
+
+def getCurrentWorkingDirecotry():
+    return os.getcwd()
+
+
+def classifyDefect(prDefDetailsList=None, prRefKwList=None):
+    newList = []
+    for i in prRefKwList:
+        for j in prDefDetailsList:
+            if i.lower() in j.lower():
+                print("its a performance defect")
+            else:
+                print("its a functional defect")
+                #newList.append(j)
+    return newList
