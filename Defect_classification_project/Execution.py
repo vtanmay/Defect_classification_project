@@ -9,5 +9,5 @@ defectSummary = cmnLib.getDefectSummaryFromJira(prProject=projectId, prDefectId=
 loc = (cmnLib.getCurrentWorkingDirecotry()+"\Reference_keywords.xlsx")
 listOfPerfKeywords = cmnLib.getPerformanceKeywordsFromExcelSheet(prFilePath=loc, prSheetName='Performance Keywords')
 #print("==== perf keywords from sheet ===", listOfPerfKeywords)
-wb = cmnLib.createXLSFileAndReturnXLSSheet(prWorkbookName='Classified_defects.xls', prWorkbookSheet='classified defects')
+wb = cmnLib.createXLSFileAndReturnXLSWb(prWorkbookName='Classified_defects.xls', prWorkbookSheet='classified defects')
 cmnLib.classifyDefect(prDefectId=defectId, prDefDetailsList=defectSummary, prRefKwList=listOfPerfKeywords, prWb=wb, prWorkbookName='Classified_defects.xls')

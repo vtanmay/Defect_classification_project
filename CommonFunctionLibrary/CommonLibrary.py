@@ -41,7 +41,7 @@ def readXLSFile(prFilePath=None, prEitherSheetName=None, prOrSheetIndex=0):
         df = pd.read_excel(prFilePath, sheet_name=prOrSheetIndex)
         return df
 
-def createXLSFileAndReturnXLSSheet(prWorkbookName='test.xls', prWorkbookSheet='test sheet'):
+def createXLSFileAndReturnXLSWb(prWorkbookName='test.xls', prWorkbookSheet='test sheet'):
     wb = Workbook() # Workbook is created
     sheet = wb.add_sheet(prWorkbookSheet) # create sheet.
     style = xlwt.easyxf('font: bold 1')  # Specifying style
