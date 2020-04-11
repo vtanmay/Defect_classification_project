@@ -1,6 +1,8 @@
 from jira.client import JIRA
 import pandas as pd
 import os
+import xlwt
+from xlwt import Workbook
 
 
 # get defect summary from JIRA
@@ -9,6 +11,7 @@ def getDefectSummaryFromJira(prProject=None, prDefectId=None):
     summary_list = []
     jira_options = {'server': 'https://servicedesk.oversightsystems.com'}
     jira = JIRA(options=jira_options, basic_auth=('tanmay.vaidya', 'l3tV41d41n!2019'))
+    # project = 'WB' AND key in ('WB-3457', 'WB-3329')
     jql = 'project = {} AND key = {}'.format(prProject, prDefectId)
     issueList = jira.search_issues(jql)
     for issue in issueList:
@@ -38,18 +41,35 @@ def readXLSFile(prFilePath=None, prEitherSheetName=None, prOrSheetIndex=0):
         df = pd.read_excel(prFilePath, sheet_name=prOrSheetIndex)
         return df
 
+def createXLSFileAndReturnXLSSheet(prWorkbookName='test.xls', prWorkbookSheet='test sheet'):
+    wb = Workbook() # Workbook is created
+    sheet = wb.add_sheet(prWorkbookSheet) # create sheet.
+    style = xlwt.easyxf('font: bold 1')  # Specifying style
+    sheet.write(0, 0, 'Defect id', style)
+    sheet.write(0, 1, 'Defect type', style)
+    #wb.get_sheet()
+    wb.save(prWorkbookName)
+    return wb
+
 
 def getCurrentWorkingDirecotry():
     return os.getcwd()
 
 
-def classifyDefect(prDefDetailsList=None, prRefKwList=None):
-    newList = []
+def classifyDefect(prDefectId=None, prDefDetailsList=None, prRefKwList=None, prWb=None, prWorkbookName='test.xls'):
     for i in prRefKwList:
         for j in prDefDetailsList:
             if i.lower() in j.lower():
-                print("its a performance defect")
+                sheet = prWb.get_sheet(0)
+                sheet.write(1, 0, prDefectId)
+                sheet.write(1, 1, 'Performance')
+                prWb.save(prWorkbookName)
+                #print("its a performance defect")
             else:
-                print("its a functional defect")
-                #newList.append(j)
-    return newList
+                sheet = prWb.get_sheet(0)
+                sheet.write(1, 0, prDefectId)
+                sheet.write(1, 1, 'Functional')
+                prWb.save(prWorkbookName)
+               # print("its a functional defect")
+        break
+
