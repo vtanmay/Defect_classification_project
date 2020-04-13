@@ -19,6 +19,23 @@ def getDefectSummaryFromJira(prProject=None, prDefectId=None):
         summary_list.append(issue.fields.summary)
     return summary_list
 
+def getDefectSummaryFromJira(prProject=None, prDefectId=None):
+    jira_options = {'server': 'https://servicedesk.oversightsystems.com'}
+    jira = JIRA(options=jira_options, basic_auth=('tanmay.vaidya', 'l3tV41d41n!2019'))
+    # project = 'WB' AND key in ('WB-3457', 'WB-3329')
+    jql = 'project = {} AND key = {}'.format(prProject, prDefectId)
+    issueDetails = jira.search_issues(jql)
+    defectSummary = issueDetails[0].fields.summary
+    return defectSummary
+
+def getDefectDescriptionFromJira(prDefectId=None):
+    jira_options = {'server': 'https://servicedesk.oversightsystems.com'}
+    jira = JIRA(options=jira_options, basic_auth=('tanmay.vaidya', 'l3tV41d41n!2019'))
+    # project = 'WB' AND key in ('WB-3457', 'WB-3329')
+    issue = jira.issue(prDefectId)
+    defectDescription = issue.fields.description
+    return defectDescription
+
 
 def getColumnDataAsAListFromTable(prDataFrame=None, prOptColumnName=None, prOptColumnIndex=0):
     if prOptColumnName is not None:
@@ -72,4 +89,25 @@ def classifyDefect(prDefectId=None, prDefDetailsList=None, prRefKwList=None, prW
                 prWb.save(prWorkbookName)
                # print("its a functional defect")
         break
+
+def classifyDefect(prDefSummary=None, prDefDescr=None , prRefKwList=None):
+    flag = False
+    for i in prRefKwList:
+        if (i.lower() in prDefSummary.lower()) or (i.lower() in prDefDescr.lower()):
+            flag = True
+            break
+    return flag
+
+
+def writeResultToXLSFile(prFlag=None, prDefectId=None, prWb=None, prWorkbookName='test.xls'):
+    if(prFlag):
+        sheet = prWb.get_sheet(0)
+        sheet.write(1, 0, prDefectId)
+        sheet.write(1, 1, 'Performance')
+        prWb.save(prWorkbookName)
+    else:
+        sheet = prWb.get_sheet(0)
+        sheet.write(1, 0, prDefectId)
+        sheet.write(1, 1, 'Functional')
+        prWb.save(prWorkbookName)
 
